@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'scroll_page_transition_controller.dart';
@@ -14,7 +15,7 @@ class ScrollPageTransition extends StatefulWidget {
     this.hapticFeedback = true,
     this.hapticFeedbackType = HapticsType.soft,
     this.reverse = true,
-    this.swipeDistance = 50,
+    this.swipeDistance = 300,
     this.maxBlur = 10.0,
     this.controller,
     super.key,
@@ -108,6 +109,7 @@ class ScrollPageTransitionState extends State<ScrollPageTransition>
 
     setState(() {
       offsetY += details.primaryDelta!;
+      print(offsetY);
       double newOpacity = (offsetY / widget.swipeDistance).abs().clamp(
         0.0,
         1.0,
@@ -128,22 +130,7 @@ class ScrollPageTransitionState extends State<ScrollPageTransition>
       child: GestureDetector(
         onVerticalDragUpdate: _handleDragUpdate,
         onVerticalDragEnd: _handleDragEnd,
-        child: Stack(
-          children: [
-            widget.primaryPage,
-            // Apply a blur effect to the primary page based on opacity.
-            if (opacity > 0)
-              BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: opacity * widget.maxBlur,
-                  sigmaY: opacity * widget.maxBlur,
-                ),
-                child: Container(color: Colors.transparent),
-              ),
-            // Secondary page fades in on top.
-            Opacity(opacity: opacity, child: widget.secondaryPage),
-          ],
-        ),
+        child: widget.primaryPage,
       ),
     );
   }
